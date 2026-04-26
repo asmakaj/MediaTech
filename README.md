@@ -13,7 +13,7 @@ Ce projet a été conçu dans le cadre d’un travail en équipe en informatique
 - Asma  Kajeiou
 - Marwa  
 - Yasmina  Hida
-- Amir  
+- Amir  EL BAYED
 
 ---
 
