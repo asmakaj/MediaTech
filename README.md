@@ -11,9 +11,9 @@ Ce projet a été conçu dans le cadre d’un travail en équipe en informatique
 **L’équipe :**
 - Nassim  Izza
 - Asma  Kajeiou
-- Marwa  
+- Marwa  Dkhissi
 - Yasmina  Hida
-- Amir  EL BAYED
+- Amir  El bayed
 
 ---
 
