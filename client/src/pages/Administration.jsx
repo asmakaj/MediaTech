@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const LEVELS = { debutant:'Debutant', intermediaire:'Intermediaire', avance:'Avance', expert:'Expert' };
+const LEVELS = { debutant:'Debutant', avance:'Avance', expert:'Expert' };
 
 export default function Administration() {
     const [users, setUsers] = useState([]);
@@ -102,9 +102,14 @@ export default function Administration() {
                                     <td>
                                         <button className="btn btn-outline btn-sm" onClick={() => adjustPoints(u.id, 15)}>+15pts</button>{' '}
                                         <button className="btn btn-outline btn-sm" onClick={() => adjustPoints(u.id, -15)}>-15pts</button>{' '}
-                                        <button className="btn btn-sm" style={{background:'#fee2e2', color:'#ef4444', border:'1px solid #fecaca'}} onClick={() => deleteUser(u.id)}>
-                                            Suppr.
-                                        </button>
+                                        {u.type_membre !== 'administrateur' && (
+                                            <button className="btn btn-sm" style={{background:'#fee2e2', color:'#ef4444', border:'1px solid #fecaca'}} onClick={() => deleteUser(u.id)}>
+                                                Suppr.
+                                            </button>
+                                        )}
+                                        {u.type_membre === 'administrateur' && (
+                                            <span style={{fontSize:'0.75rem', color:'#9ca3af', fontStyle:'italic'}}>Protégé</span>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

@@ -40,15 +40,44 @@ export default function Regles() {
             <div className="grid-2">
                 <div className="card">
                     <div className="card-header"><h3>Regles d'utilisation</h3></div>
-                    <ul style={{marginLeft:'20px', fontSize:'0.88rem', lineHeight:'2'}}>
-                        <li>L'acces au <strong>Module Gestion</strong> requiert 30 points (niveau Avance).</li>
-                        <li>L'acces au <strong>Module Administration</strong> requiert 60 points (niveau Expert).</li>
-                        <li>Chaque connexion rapporte <strong>+0.25 pt</strong>.</li>
-                        <li>Chaque consultation d'objet rapporte <strong>+0.50 pt</strong>.</li>
-                        <li>Toute modification d'objet est journalisee et auditable.</li>
-                        <li>Les demandes de suppression doivent etre motivees.</li>
-                        <li>L'abus des controles peut entrainer une reduction de points.</li>
-                    </ul>
+                    <div style={{fontSize:'0.88rem', lineHeight:'1.8'}}>
+                        <div style={{marginBottom:'16px'}}>
+                            <strong style={{color:'#4a5b6e', fontSize:'0.95rem'}}>Niveau Debutant (0-29 points)</strong>
+                            <ul style={{marginLeft:'20px', marginTop:'8px', marginBottom:'0'}}>
+                                <li>Consultation des objets (lecture seule)</li>
+                                <li>Accès à la page Visualisation</li>
+                                <li>Accès à la page Informations et Règles</li>
+                                <li>Gestion de son profil personnel</li>
+                            </ul>
+                        </div>
+                        <div style={{marginBottom:'16px'}}>
+                            <strong style={{color:'#2d6a4f', fontSize:'0.95rem'}}>Niveau Avance (30-59 points)</strong>
+                            <ul style={{marginLeft:'20px', marginTop:'8px', marginBottom:'0'}}>
+                                <li>Tous les droits du niveau Débutant</li>
+                                <li><strong>Accès complet au Module Gestion</strong></li>
+                                <li>Modification des objets (création, édition)</li>
+                                <li>Demande de suppression d'objets (avec justification)</li>
+                                <li>Gestion des réservations de salle</li>
+                                <li>Historique détaillé de ses actions</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <strong style={{color:'#1d3557', fontSize:'0.95rem'}}>Niveau Expert (60+ points)</strong>
+                            <ul style={{marginLeft:'20px', marginTop:'8px', marginBottom:'0'}}>
+                                <li>Tous les droits du niveau Avancé</li>
+                                <li><strong>Accès complet au Module Administration</strong></li>
+                                <li>Gestion des utilisateurs (rôles et permissions)</li>
+                                <li>Approbation des modifications et suppressions</li>
+                                <li>Suppression directe d'objets</li>
+                                <li>Audit complet (historique de tous les utilisateurs)</li>
+                                <li>Gestion des salles et réservations globales</li>
+                                <li>Rapports d'activité et statistiques</li>
+                            </ul>
+                        </div>
+                        <div style={{marginTop:'16px', paddingTop:'12px', borderTop:'1px solid #eee', fontSize:'0.82rem', color:'#666'}}>
+                            <strong>Accumulation de points :</strong> +0.25 pt par connexion | +0.50 pt par consultation d'objet
+                        </div>
+                    </div>
                 </div>
 
                 <div className="card">

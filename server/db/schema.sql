@@ -14,7 +14,7 @@ CREATE TABLE users (
     type_membre VARCHAR(50),
     photo VARCHAR(255),
     points DECIMAL(10,2) DEFAULT 0,
-    level ENUM('debutant','intermediaire','avance','expert') DEFAULT 'debutant',
+    level ENUM('debutant','avance','expert') DEFAULT 'debutant',
     role ENUM('visiteur','simple','complexe','admin') DEFAULT 'simple',
     actif BOOLEAN DEFAULT FALSE,
     token_validation VARCHAR(255),

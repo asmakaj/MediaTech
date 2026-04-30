@@ -3,7 +3,6 @@ const db = require('../db/connection');
 function updateLevel(points) {
     if (points >= 60) return { level: 'expert', role: 'admin' };
     if (points >= 30) return { level: 'avance', role: 'complexe' };
-    if (points >= 10) return { level: 'intermediaire', role: 'simple' };
     return { level: 'debutant', role: 'simple' };
 }
 
@@ -18,6 +17,11 @@ exports.getUsers = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
     try {
+        const [rows] = await db.query('SELECT type_membre FROM users WHERE id=?', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ message: 'Utilisateur introuvable' });
+        if (rows[0].type_membre === 'administrateur') {
+            return res.status(403).json({ message: 'Impossible de supprimer un compte administrateur' });
+        }
         await db.query('DELETE FROM users WHERE id=?', [req.params.id]);
         await db.query('INSERT INTO action_log (user_id, type, detail) VALUES (?,?,?)', [req.user.id, 'Admin: Suppr User', `User ${req.params.id} supprime`]);
         res.json({ message: 'Utilisateur supprime' });

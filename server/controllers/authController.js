@@ -1,58 +1,67 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const db = require('../db/connection');
 require('dotenv').config();
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-});
 
 function updateLevel(points) {
     if (points >= 60) return { level: 'expert', role: 'admin' };
     if (points >= 30) return { level: 'avance', role: 'complexe' };
-    if (points >= 10) return { level: 'intermediaire', role: 'simple' };
     return { level: 'debutant', role: 'simple' };
 }
 
 exports.register = async (req, res) => {
     const { pseudo, password, nom, prenom, email, age, genre, date_naissance, type_membre } = req.body;
     try {
+        // Validation de la date de naissance
+        if (!date_naissance) {
+            return res.status(400).json({ message: 'Date de naissance requise' });
+        }
+
+        const birthDate = new Date(date_naissance);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Vérifier que la date n'est pas dans le futur
+        if (birthDate > today) {
+            return res.status(400).json({ message: 'La date de naissance ne peut pas être dans le futur' });
+        }
+
+        // Calculer l'âge à partir de la date de naissance
+        let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            calculatedAge--;
+        }
+
+        // Vérifier que l'âge est >= 10 ans
+        if (calculatedAge < 10) {
+            return res.status(400).json({ message: 'Vous devez avoir au minimum 10 ans' });
+        }
+
+        // Vérifier la cohérence entre l'âge saisi et la date de naissance
+        if (parseInt(age) !== calculatedAge) {
+            return res.status(400).json({ message: `L'âge saisi ne correspond pas à la date de naissance. Age calculé: ${calculatedAge} ans` });
+        }
+
         const [existing] = await db.query('SELECT id FROM users WHERE pseudo=? OR email=?', [pseudo, email]);
         if (existing.length > 0) return res.status(400).json({ message: 'Pseudo ou email deja utilise' });
 
         const hash = await bcrypt.hash(password, 10);
-        const token = crypto.randomBytes(32).toString('hex');
 
+        // Inscription directe avec compte actif (pas de validation email)
         await db.query(
-            'INSERT INTO users (pseudo, password, nom, prenom, email, age, genre, date_naissance, type_membre, token_validation) VALUES (?,?,?,?,?,?,?,?,?,?)',
-            [pseudo, hash, nom, prenom, email, age, genre, date_naissance, type_membre, token]
+            'INSERT INTO users (pseudo, password, nom, prenom, email, age, genre, date_naissance, type_membre, actif) VALUES (?,?,?,?,?,?,?,?,?,?)',
+            [pseudo, hash, nom, prenom, email, calculatedAge, genre, date_naissance, type_membre, true]
         );
+        
+        console.log('✅ Utilisateur créé:', { pseudo, email, age: calculatedAge, genre, type_membre, actif: true });
 
-        const validationUrl = `${process.env.CLIENT_URL}/valider-email?token=${token}`;
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Validation de votre compte MediaTech',
-            html: `<p>Bonjour ${prenom},</p><p>Cliquez sur ce lien pour valider votre inscription :</p><a href="${validationUrl}">${validationUrl}</a>`
+        res.json({ 
+            message: 'Inscription reussie. Vous pouvez vous connecter maintenant.',
+            success: true
         });
-
-        res.json({ message: 'Inscription reussie. Verifiez votre email.' });
     } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-};
-
-exports.validateEmail = async (req, res) => {
-    const { token } = req.query;
-    try {
-        const [rows] = await db.query('SELECT id FROM users WHERE token_validation=?', [token]);
-        if (!rows.length) return res.status(400).json({ message: 'Token invalide' });
-        await db.query('UPDATE users SET actif=TRUE, token_validation=NULL WHERE token_validation=?', [token]);
-        res.json({ message: 'Compte active. Vous pouvez vous connecter.' });
-    } catch (err) {
+        console.error('❌ Erreur register:', err.message);
         res.status(500).json({ message: err.message });
     }
 };
@@ -63,7 +72,6 @@ exports.login = async (req, res) => {
         const [rows] = await db.query('SELECT * FROM users WHERE pseudo=?', [pseudo]);
         if (!rows.length) return res.status(401).json({ message: 'Identifiants invalides' });
         const user = rows[0];
-        if (!user.actif) return res.status(401).json({ message: 'Compte non active. Verifiez votre email.' });
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) return res.status(401).json({ message: 'Identifiants invalides' });
 

@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
 const LEVELS = {
-    debutant: { label: 'Debutant', color: '#94a3b8', next: 10 },
-    intermediaire: { label: 'Intermediaire', color: '#38bdf8', next: 30 },
+    debutant: { label: 'Debutant', color: '#94a3b8', next: 30 },
     avance: { label: 'Avance', color: '#818cf8', next: 60 },
     expert: { label: 'Expert', color: '#fbbf24', next: null }
 };

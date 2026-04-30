@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function Accueil() {
-    const [stats, setStats] = useState({ objets: 0, users: 0 });
+    const [stats, setStats] = useState({ objets: 0 });
 
     useEffect(() => {
         axios.get('/api/objets').then(r => setStats(s => ({ ...s, objets: r.data.length })));
